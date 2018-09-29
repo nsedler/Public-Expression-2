@@ -1,0 +1,117 @@
+@name songPlayer
+@inputs 
+@outputs 
+@persist Songs:array Songnum:number Volume:number Randomnum:number
+@trigger 
+
+runOnChat(1)
+
+Songs = array(
+    
+    "https://www.youtube.com/watch?v=VurhzANQ_B0&list=RDVurhzANQ_B0&start_radio=1", #1
+    "https://www.dropbox.com/s/sbymui07e3e8yw4/milkweed_myself-2005.mp3?raw=1", #2
+    "https://www.dropbox.com/s/79rjfyltoc0ekwz/Wait%20and%20Bleed-Slipknot%20%28Lyrics%29.mp3?raw=1", #3
+    "https://www.dropbox.com/s/mo7jqcuua2ywuxm/One.mp3?raw=1", #4
+    "https://www.dropbox.com/s/jxte1gma4n67q11/Volbeat%20-%20A%20Warrior%27s%20Call%20Lyrics%20%281%29.mp3?raw=1", #5
+    "https://www.dropbox.com/s/v117p1q12gr7p5h/Vienna-Billy%20Joel%20%28Lyrics%20in%20Description%29.mp3?raw=1", #6
+    "https://www.dropbox.com/s/2n3micp4hc2od9y/The%20Man%20Who%20Sold%20The%20World%20%282015%20Remastered%20Version%29.mp3?raw=1", #7
+    "https://www.dropbox.com/s/ma7b2mdgbcat8hc/Ten%20Years%20Gone.mp3?raw=1", #8
+    "https://www.dropbox.com/s/onm1kxjwafnoqpb/Temple%20Of%20The%20Dog%20-%20Hunger%20Strike.mp3?raw=1", #9
+    "https://www.dropbox.com/s/l8tabylfdt7vlde/Tears%20in%20Heaven%20by%20Eric%20Clapton%20with%20lyrics.mp3?raw=1", #10
+    "https://www.dropbox.com/s/ndtq0lzpk4550i0/Suicidal%20Tendencies%20-%20How%20Will%20I%20laugh%20Tomorrow.mp3?raw=1", #11
+    "https://www.dropbox.com/s/bsxj7tmgf8q08np/Stone%20Sour%20-%20St%20Marie%20%28Official%20Audio%29.mp3?raw=1", #12
+    "https://www.dropbox.com/s/wgf27ak3loalvra/Stone%20Sour%20-%20Bother%20%5BOFFICIAL%20VIDEO%5D.mp3?raw=1", #13
+    "https://www.dropbox.com/s/y7gw3jiq5attjd3/Stephen%20-%20Play%20Me%20Like%20A%20Violin.mp3?raw=1", #14
+    "https://www.dropbox.com/s/ohg3cpv4qrq4hn5/Staind%20Nutshell%20Cover.mp3?raw=1", #15
+    "https://www.dropbox.com/s/o6964ro44a48nz8/Slayer%20-%20Raining%20Blood.mp3?raw=1", #16
+    "https://www.dropbox.com/s/ear1d23ize2txz3/Space%20Oddity%20%282015%20Remastered%20Version%29.mp3?raw=1", #17
+    "https://www.dropbox.com/s/j3opdag08lh0gwd/Scenes%20From%20An%20Italian%20Restaurant-Billy%20Joel%20%28lyrics%29.mp3?raw=1", #18
+    "https://www.dropbox.com/s/1vqc6mfqmm0ph06/Remembering%20Myself.mp3?raw=1", #19
+    "https://www.dropbox.com/s/is2n9kjp65dpo7v/PINK%20GUY%20-%20KILL%20YOURSELFSUB%20ESPA%C3%91OL.mp3?raw=1", #20
+    "https://www.dropbox.com/s/tfa85z19hl2yzde/Over%20The%20Hills%20And%20Far%20Away.mp3?raw=1", #21
+    "https://www.dropbox.com/s/e16x5zdvdpeqa1q/Nirvana%20-%20Aneurysm.mp3?raw=1", #22
+    "https://www.dropbox.com/s/1u0ynmtmj4jmfcj/Metallica%20-%20Nothing%20Else%20Matters%20Official%20Music%20Video.mp3?raw=1", #23
+    "https://www.dropbox.com/s/pejuey6pshdm7t2/Metallica%20-%20Fade%20to%20Black.mp3?raw=1", #24
+    "https://www.dropbox.com/s/heptsnfvmko6pc8/Mad%20Season%20-%20River%20Of%20Deceit.mp3?raw=1", #25
+    "https://www.dropbox.com/s/dz6ghsqxkvb43e6/Mad%20Season%20-%20Long%20Gone%20Day.mp3?raw=1", #26
+    "https://www.dropbox.com/s/hm96s19f3rqnl8o/John%20Mellencamp-%20Ain%27t%20Even%20Done%20With%20the%20Night.mp3?raw=1", #27
+    "https://www.dropbox.com/s/3m89t5b1azxscyb/The%20Cranberries%20-%20Zombie.mp3?raw=1", #28
+    "https://www.dropbox.com/s/6uplyhr0iroyev5/Black%20sabbath-War%20Pigs%20%28lyrics%29.mp3?raw=1", #29
+    "https://www.dropbox.com/s/m47gv2use7483o7/Foo%20Fighters%20-%20The%20Sky%20Is%20A%20Neighborhood.mp3?raw=1", #30
+    "https://www.dropbox.com/s/zdbt9af1wa4v00e/Foo%20Fighters%2C%20All%20My%20Life%20%28With%20Lyrics%29.mp3?raw=1", #31
+    "https://www.dropbox.com/s/p9rst2xo5zrezy0/Red%20Hot%20Chili%20Peppers%20-%20Dark%20Necessities%20%5BOFFICIAL%20AUDIO%5D.mp3?raw=1", #32
+    "https://www.dropbox.com/s/5ns41mvepjq9hlt/Avenged%20Sevenfold%20-%20A%20Little%20Piece%20Of%20Heaven%20%5BOfficial%20Music%20Video%5D.mp3?raw=1", #33
+    "https://www.dropbox.com/s/h6aztt6f6n4gvjz/Tribute.mp3?raw=1", #34
+    "https://www.dropbox.com/s/b4n9w6qws9ug015/The%20Metal.mp3?raw=1", #35
+    "https://www.dropbox.com/s/dyyjpddpwdku775/Kickapoo.mp3?raw=1", #36
+    "https://www.dropbox.com/s/go90mide5dn52wu/Metallica%20-%20Sad%20But%20True%20Lyrics%20%28HD%29.mp3?raw=1", #37
+    "https://www.dropbox.com/s/frbf4al1r25igxh/Metallica%20-%20Leper%20Messiah%20%28HD%29.mp3?raw=1", #38
+    "https://www.dropbox.com/s/qgs7yzg3lyr6x72/Death%20Grips%20-%20Exmilitary%20-%204%20-%20Lord%20of%20the%20Game%20%28ft.%20Mexican%20Girl%29.mp3?raw=1" #39
+)
+
+if (first()) {
+    
+   
+}
+
+
+if(chatClk(owner())) {
+    Ls = owner():lastSaid():explode(" ")
+    
+    
+    if (Ls[1,string] == "!play"){
+        
+        Songnum = Ls[2, string]:toNumber()        
+        
+        hideChat(1)
+        
+        print("You have begun playing: " + Songs[Songnum, string])
+        entity():owner():streamStart(1, Songs[Songnum, string])  
+    }
+    
+    elseif (Ls[1,string] == "!volume") {
+        
+        Volume = Ls[2, string]:toNumber()/100
+        
+        hideChat(1)
+        
+        print("The volume has been changed to: " + Volume)
+        streamVolume(1, Volume)
+    }
+    
+    elseif (Ls[1,string] == "!stop") {
+        
+        print("The music has been stopped")
+        
+        hideChat(1)
+        
+        streamStop(1)   
+    }
+    
+    elseif (Ls[1, string] == "!help") {
+        
+        hideChat(1)
+     
+        print("You Can use !play (number) for a song, !volume (number) to change the volume, !stop to stop the song.")   
+    }
+    
+    elseif (Ls[1, string] == "!random") {
+        
+        Songlist = Songs:count()
+        
+        hideChat(1)
+        
+        Randomnum = random(1, Songlist)
+        print("You have begun playing: " + Songs[Randomnum, string])
+        entity():owner():streamStart(1, Songs[Randomnum, string]) 
+    }
+}
+
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

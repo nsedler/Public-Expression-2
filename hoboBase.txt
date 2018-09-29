@@ -1,0 +1,62 @@
+@name hoboBase
+@inputs 
+@outputs Door
+@persist Hobos:table
+@trigger 
+
+interval(100)
+
+if(first()){
+    
+    Hobos[1, entity] = owner()   
+}
+
+Hobo = 38
+HoboKing = 39
+
+findInSphere(entity():pos(), 25)
+findClipToClass("Player")
+Target = findResult(1)
+
+for(I = 1, Hobos:count()){
+    
+    if(Target:isAlive()){
+     
+        if(Target == Hobos[I, entity]){
+            
+            Door = 1
+            
+            timer("close", 500)   
+        }   
+    }   
+}
+
+if(clk("close")){
+    
+    Door = 0   
+}
+
+if(Target:team() == Hobo || Target:team() == HoboKing){
+ 
+    Hobos:pushEntity(Target)   
+} elseif(Target:team() != Hobo || Target:team() != HoboKing){
+
+    foreach(K, V:entity = Hobos){
+        if(V == Target){
+            
+            Hobos:remove(K)
+            break
+        }
+    }
+    Door = 0
+}
+
+entity():setAlpha(0)
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

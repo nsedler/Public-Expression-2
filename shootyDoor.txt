@@ -1,0 +1,81 @@
+@name shootyDoor
+@inputs 
+@outputs Door
+@persist Shooters:array
+@trigger 
+
+interval(100)
+runOnChat(1)
+
+if(first()){
+ 
+    E = entity()
+    O = owner()
+    
+    Shooters = array(
+    
+        owner(),
+        findPlayerBySteamID("STEAM_0:1:419503910")
+    )
+}
+
+function entity shoot(Shooters:array){
+    
+    for(I = 1, Shooters:count()){
+        
+        return Shooters[I, entity]   
+    }   
+}
+
+findInSphere(entity():pos(), 150)
+findClipToClass("Player")
+Shoot = findResult(1)
+
+for(I = 1, Shooters:count()){
+    
+    if(Shoot:isAlive()){
+     
+        if(Shoot == Shooters[I, entity]){
+         
+            if(shoot(Shooters):keyAttack1() || shoot(Shooters):keyAttack2()){
+    
+                Door = 1
+    
+                timer("close", 1 * 500)
+            } 
+        }  
+    } 
+}
+
+
+if(clk("close")){
+ 
+    Door = 0   
+}
+
+if(chatClk(owner())){
+    
+    Ls = owner():lastSaid():explode(" ")
+    
+    if(Ls[1, string] == "!add"){
+     
+        Shooters:pushEntity(findPlayerByName(Ls[2, string]))  
+        
+        print(Shooters) 
+        
+        print(findPlayerByName(Ls[2, string]))
+    }  
+}
+
+
+
+
+
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

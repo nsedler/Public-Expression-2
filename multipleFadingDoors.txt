@@ -1,0 +1,112 @@
+@name multipleFadingDoors
+@inputs 
+@outputs
+@persist [Fade Allowed Wirelink Help]:table Players:array
+@trigger 
+
+if(first()){
+    
+    runOnChat(1)
+    
+    function nPrint(Text:string){
+    
+        printColor(vec(27, 27, 27), "[", vec(189, 32, 49), "Nates Door", vec(27, 27, 27), "]:", vec(255, 255, 255), Text)
+    }
+    
+    Help["!help", string] = "This will return of list of commands"
+    Help["+player", string] = "Adds a player to the doors whitelist"
+    Help["-player", string] = "Removes a player from the doors whitelist"
+    Help["+door", string] = "Adds a door to the whitelist"
+    
+    nPrint("Type !help for info.")   
+    
+    Fade["Doors", table] = table()
+    
+    entity():setName("Nates Fading Door E2")
+    
+}
+
+if(chatClk(owner())){
+    
+    Ls = owner():lastSaid():explode(" ")   
+    
+    if(Ls[1, string] == "!help"){
+        
+        hideChat(1)
+        
+        foreach(K, V:string = Help){
+            
+            nPrint(K + " - " + V)   
+        }   
+    }
+    
+    if(Ls[1, string] == "+door"){
+        
+        local Door = owner():aimEntity()
+        
+        if(Door:isValid()){
+            
+            Fade["Doors", table]:insertEntity(1, Door)
+            
+            Wirelink[Door:id(), wirelink] = Door:wirelink()
+            
+            nPrint("Added: " + Door:toString() + " to the whitelist.")
+            
+            Fade["Doors " + Door:id(), table] = table()
+        } else{
+        
+            nPrint("This is not a valid door.")
+        }   
+    } elseif(Ls[1, string] == "+player"){
+    
+        local Ply = findPlayerByName(Ls[2, string])
+        
+        if(Ply:isPlayer()){
+            if(Allowed[Ply:steamID(), number]){
+         
+                nPrint("Player is already on whitelist")   
+            } else{
+        
+                nPrint("Player: " + Ply:name() + " has been added to the whitelist")
+            
+                Allowed[Ply:steamID(), number] = 1
+                Players:insertEntity(1, Ply)
+            }
+        } else{
+        
+            nPrint("I'm sorry, I cannot find that player.")
+        }
+    }
+}
+interval(100)
+
+for(I = 1, Fade["Doors", table]:count()){
+    
+    local Door = Fade["Doors", table][I, entity]
+    
+    Fade["Doors " + Door:id(), table]["Faded", number] = 0
+    
+    foreach(K, V:entity = Players){
+        
+        if(V:pos():distance(Door:pos()) <= 100 & Allowed[V:steamID(), number]){
+            Fade["Doors " + Door:id(), table]["Faded", number] = 1
+        }    
+    }
+    
+    if(Fade["Doors " + Door:id(), table]["Faded", number]){
+        
+        Wirelink[Door:id(), wirelink]["Fade", number] = 1
+    }
+    else{
+        
+        Wirelink[Door:id(), wirelink]["Fade", number] = 0
+    }   
+}
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

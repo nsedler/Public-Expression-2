@@ -1,0 +1,61 @@
+@name moneyRequest
+@inputs EGP:wirelink
+@outputs Display
+@persist Player:entity Command:string Money:number
+@trigger 
+
+interval(100)
+runOnChat(1)
+
+if(first()){
+Command="/donate"
+
+EGP:egpClear()
+
+EGP:egpRoundedBox(1, vec2(265,300), vec2(300,300))
+
+EGP:egpText(4, "Most Recent Donor: ", vec2(130,230))
+EGP:egpSize(4, 33)
+
+EGP:egpText(3, "nobody: $0", vec2(130,290))
+EGP:egpSize(3, 30)
+
+EGP:egpText(5, "/donate (amount)", vec2(210, 360))
+EGP:egpSize(5, 15)
+}
+
+EGP:egpColor(1, hsv2rgb(vec(30*curtime()%360,0.5,0.5)))
+
+if(chatClk(lastSpoke())){
+    Ls=lastSpoke():lastSaid():explode(" ")
+    if(Ls[1,string] == Command){
+        Player = lastSpoke()
+        
+        Money = Ls[2, string]:toNumber()
+        
+        moneyRequest(Player, Money, 30)
+    }
+}
+
+if(moneyClk()) {
+    
+    EGP:egpRemove(3)
+    
+    EGP:egpText(2,Player:name()+" $"+Money,vec2(130,290))
+    EGP:egpSize(2, 30)
+    
+    concmd("ulx psay \"" + Player:name() + "\" Thanks for the suport!")
+    
+    print(4, "\"")
+}
+
+entity():setAlpha(0)
+
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

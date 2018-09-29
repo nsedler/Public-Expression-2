@@ -1,0 +1,43 @@
+@name haha yes me too
+@inputs 
+@outputs 
+@persist 
+@trigger 
+
+if(first()){
+ 
+    hint("anti afk", 3)   
+    
+    holoCreate(1)
+    holoModel(1, "models/beer/wiremod/gate_e2.mdl")
+    
+    entity():setAlpha(0)
+}
+
+interval(100)
+
+timer("jump", 180000)
+
+if(clk("jump")){
+    
+    print("jump")
+ 
+    concmd("+jump")
+    timer("a", 2000)  
+}
+if(clk("a")){
+        
+    print("no jump")
+     
+    concmd("-jump")   
+    timer("jump", 180000)
+}
+
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

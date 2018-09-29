@@ -1,0 +1,452 @@
+@name ur mom
+@outputs Door 
+@persist [Front Back]:dframe [Pay Perm List]:dbutton [AddPD Add Remove]:dcombobox Label:dlabel  
+@persist [BC PO CPM CPA PC SB ES SM] [Allowed]:array
+
+#TODO: admin button for adding add all CP
+
+    runOnChat(1)   
+    runOnVgui(1)
+    interval(500)
+
+if(first()){
+    
+    vguiDefaultPlayers(players())
+    
+    entity():setName("staff is gay")
+    
+    #[
+        All of the PDs team ids
+    ]#
+    BC = 4
+    PO = 6
+    CPM = 7
+    SM = 8
+    SB = 9
+    ES = 10
+    CPA = 11
+    PC = 12
+    
+    Allowed[1, entity] = owner()  
+ 
+    #[
+        Front end panel
+    ]#
+    Front = dframe(1)
+    
+    Front:setSize(320, 75)
+    Front:setTitle("Toll")
+    Front:setColor(vec(27, 27, 27))
+    Front:center()
+    Front:setDeleteOnClose(0)
+    Front:enableKeyboardInput(0)
+    Front:setVisible(0)
+    Front:makePopup()
+    
+    Front:create()
+    
+    Pay = dbutton(2, 1)
+    
+    Pay:setIcon("icon16/money_dollar.png")
+    Pay:setText(" - 1 time pass")
+    Pay:setSize(120, 25)
+    Pay:setPos(vec2(20,35))
+    
+    Pay:create()
+    
+    Perm = dbutton(3, 1)
+    
+    Perm:setIcon("icon16/money_dollar.png")
+    Perm:setText(" - Permanent pass")
+    Perm:setSize(120, 25)
+    Perm:setPos(vec2(190,35))
+    
+    Perm:create()
+    
+    Label = dlabel(4, 1)
+    
+    Label:setText("or")
+    Label:setPos(vec2(160, 40))
+    Label:setFont("comic sans", 15)
+    
+    Label:create()
+    
+    #[
+        Back  end panel
+    ]#
+    Back = dframe(5)
+    
+    Back:setSize(320, 110)
+    Back:setTitle("Mayor Panel")
+    Back:setColor(vec(27, 27, 27))
+    Back:center()
+    Back:setDeleteOnClose(0)
+    Back:enableKeyboardInput(1)
+    Back:setVisible(0)
+    Back:makePopup()
+    
+    Back:create()
+    
+    List = dbutton(6, 5)
+    
+    List:setIcon("icon16/user.png")
+    List:setText(" - List of players")
+    List:setSize(120, 25)
+    List:setPos(vec2(20,35))
+    
+    List:create()
+    
+    AddPD = dcombobox(7, 5)
+    
+    #BC PO CPM CPA PC SB ES SM
+    
+    AddPD:setText("Add all PD")
+    
+    AddPD:addChoice("All", 1)
+    AddPD:addChoice("Beat Cop", 2)
+    AddPD:addChoice("Civil Protection Medic", 3)
+    AddPD:addChoice("CP Agent", 4)
+    AddPD:addChoice("Elite Swat", 5)
+    AddPD:addChoice("Police Chief", 6)
+    AddPD:addChoice("Police Officer", 7)
+    AddPD:addChoice("Swat Breacher", 8)
+    AddPD:addChoice("Swat Member", 9)
+    
+    AddPD:setSize(120, 25)
+    AddPD:setPos(vec2(180,35))
+    AddPD:setSortItems(1)
+    
+    AddPD:create()
+    
+    Add = dcombobox(8, 5)
+    
+    Add:setText("Add Players")
+    Add:setSize(120, 25)
+    Add:setPos(vec2(20,70))
+    
+    Remove = dcombobox(9, 5)
+
+    Remove:setText("Remove Players")
+    Remove:setSize(120, 25)
+    Remove:setPos(vec2(180,70))
+    Remove:setSortItems(1)
+
+    
+    function addAll(){
+        
+        foreach(K, V:entity = players()){
+            
+            Ply2 = players()[K, entity]
+            Teamnum = players()[K, entity]:team()
+                Name = Teamnum:teamName()
+            
+                if(Name == "Beat Cop" | 
+                   Name == "Civil Protection Medic" | 
+                   Name == "CP Agent" | 
+                   Name == "Elite SWAT" | 
+                   Name == "Police Chief" | 
+                   Name == "Police Officer" |
+                   Name == "SWAT Breacher" | 
+                   Name == "SWAT Member"){
+                    
+                for(I=0,Allowed:count()){
+                    
+                    if(players()[K, entity]==Allowed[I,entity]){
+                        
+                        print(players()[K, entity]:name() + " Is already added to the door")
+                        break
+                    }
+                    if(I==Allowed:count()){
+                        
+                            print(Ply2:name() + " Was added to the door")
+                            Allowed:pushEntity(Ply2) 
+                        }
+                    }          
+            }
+        }
+    }
+    
+    function seeList(){
+        
+        print("-= List of Players =-")
+        
+        for(I=1,Allowed:count()){
+            
+            print(Allowed[I,entity]:name())
+        }
+    } 
+    
+    function visiblePanel(Panel:dframe, Person:entity){
+        
+        Panel:setVisible(!Panel:isVisible(Person))
+        Panel:modify(array(Person))
+    }
+    
+    function addDoorButton(Job:string){
+        
+        for(I = 0, players():count()){
+            
+            Teamnum = players()[I, entity]:team()
+            Name = Teamnum:teamName()
+            
+            if(Name == Job){
+                    
+                for(J = 0, Allowed:count()){
+                    if(players()[I, entity] == Allowed[J, entity]){
+                            
+                        Allowed:remove(J)
+                        
+                        print(players()[I,entity]:name() + " Is already added to the door")
+                    } elseif(players()[I, entity] != Allowed[J, entity]){
+                        
+                        Allowed:pushEntity(players()[I,entity])
+                            
+                        print("Added: " + players()[I,entity]:name())
+                    }
+                }
+            }
+        } 
+    }
+}
+
+
+foreach(K, V:entity = players()){
+    
+    Add:addChoice(players()[K, entity]:name(), K)   
+}
+
+Add:create()
+
+
+
+Remove:create()
+
+findInSphere(entity():pos(),25)
+Target = findResult(1)
+
+#[
+    Door opener
+]#
+for(I = 1, Allowed:count()){
+    
+    if(Target:isAlive()){
+     
+        if(Target == Allowed[I, entity]){
+         
+            Door = 1  
+            timer("close", 1000) 
+        }  
+    } 
+}
+
+if(chatClk(owner())){
+    
+    Ls = lastSpoke():lastSaid()
+    
+    if (Ls == "/list"){
+        
+        seeList()
+    } elseif (Ls == "/badmin"){ # Admin panel (owner of e2)
+    
+        for(I=1, Allowed:count()){
+            
+            if(I==1){
+                
+                Remove:removeAll()
+                Remove = dcombobox(9, 5)
+                Remove:setText("Remove Players")
+                Remove:setSize(120, 25)
+                Remove:setPos(vec2(180,70))
+            }
+            Remove:addChoice(Allowed[I, entity]:name(), I)   
+        }
+        visiblePanel(Back, owner())
+    } 
+}
+
+#[
+    Opens the menu
+]#
+if(chatClk()) {
+    
+    Ls=lastSpoke():lastSaid()
+            
+    Player = lastSpoke()
+    
+    if(Ls == "/toll") {
+
+        visiblePanel(Front, Player)
+    }
+    
+    if(Ls == "/f"){
+    
+        foreach(K, V:entity = Allowed){
+         
+            if(Player == Allowed[K, entity]){
+                
+                Door = 1
+                     
+                timer("close", 1000)  
+            }
+        }
+    }
+}
+
+#[
+    Button pressing
+]#
+if(vguiClk()) {
+    
+    local ID = vguiClkPanelID()
+    Player = vguiClkPlayer()
+    
+    if(ID == 2){  
+     
+        moneyRequest(Player, 500, 30, "Toll") 
+    } elseif (ID == 3){
+    
+        moneyRequest(Player, 25000, 30, "Perm")
+    } elseif (ID == 6){
+        
+        seeList()
+    } elseif(ID == 7){
+    
+        if(vguiClkValues()[2, number] == 1){
+            
+            addAll()
+        } elseif(vguiClkValues()[2, number] == 2){
+        
+            addDoorButton("Beat Cop")
+        } elseif(vguiClkValues()[2, number] == 3){
+        
+            addDoorButton("Civil Protection Medic") 
+        }  elseif(vguiClkValues()[2, number] == 4){
+        
+            addDoorButton("CP Agent")
+        } elseif(vguiClkValues()[2, number] == 5){
+        
+            addDoorButton("Elite SWAT") 
+        } elseif(vguiClkValues()[2, number] == 6){
+        
+            addDoorButton("Police Chief")
+        } elseif(vguiClkValues()[2, number] == 7){
+        
+            addDoorButton("Police Officer")
+        } elseif(vguiClkValues()[2, number] == 8){
+        
+            addDoorButton("SWAT Breacher")
+        } elseif(vguiClkValues()[2, number] == 9){
+        
+            addDoorButton("SWAT Member") 
+        }
+    } elseif(ID == 8){
+    
+        foreach(K, V:string = vguiClkValues()){
+         
+            for(I = 1, players():count()){
+             
+                if(players()[I, entity]:name() == vguiClkValues()[K, string]){
+                 
+                    print("test")
+                
+                    local Ply = players()[I, entity]
+                    
+                    for (J = 1, Allowed:count()){
+                     
+                        if(Allowed[J, entity] == Ply){
+                         
+                            print(Ply:name() + " Is already added to the door")
+                            break   
+                        } if (J == Allowed:count()){
+                            
+                            print(Ply:name() + " Was added the door")
+                            Allowed:pushEntity(Ply)
+                        }                    
+                    }
+                }   
+            }
+        }
+    } elseif(ID == 9){
+    
+        ASS=vguiClkValues()[vguiClk(),string]
+        
+        for(I=1, Allowed:count()){
+            if(Allowed[I,entity]:name()==ASS){
+                
+                print(Allowed[I, entity]:name() + " Was removed from the list")
+                Allowed:remove(I) 
+                
+                for(I=1, Allowed:count()){
+                    
+                    if(I==1){
+                        
+                        Remove:removeAll()
+                        Remove = dcombobox(9, 5)
+                        Remove:setText("Remove Players")
+                        Remove:setSize(120, 25)
+                        Remove:setPos(vec2(180,70))
+                    }
+                    
+                Remove:addChoice(Allowed[I, entity]:name(), I)   
+                } 
+            }
+        }
+    }   
+}
+
+if(moneyClk("Toll")){
+
+    Front:setVisible(0)
+    Front:modify(array(moneyClkPlayer()))
+    
+    Door = 1
+    
+    concmd("say /911 " + moneyClkPlayer():name() + " Bought a one time pass")
+    
+    timer("close", 3000)
+    
+    
+} elseif(moneyClk("Perm")){
+
+    Front:setVisible(0)
+    Front:modify(array(moneyClkPlayer()))
+    
+        for(I=0,Allowed:count()){## i added this to line 378 -shiba
+            if(moneyClkPlayer()==Allowed[I,entity]){
+                
+                print(moneyClkPlayer():name()+" is a dumbo")
+                
+                concmd("ulx psay \"" + moneyClkPlayer():name() + "\" You already have permanent access to the toll")
+                
+                moneyGive(moneyClkPlayer(), 5)
+                break
+            }
+            
+            if(I==Allowed:count()){
+                
+                    Ply2 = moneyClkPlayer()
+                    
+                    print(Ply2:name() + " Bought a permanemt pass")
+                    
+                    Allowed:pushEntity(Ply2) 
+                    
+                    concmd("say /911 " + moneyClkPlayer():name() + " Has bought permanent access to the toll")
+                    concmd("ulx psay \"" + moneyClkPlayer():name() + "\" You have bought permanent access to the toll")
+                }
+            }
+}
+
+if(clk("close")){
+
+    Door = 0   
+}
+
+if(last()){reset()}
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

@@ -1,0 +1,201 @@
+@name holoCar
+@inputs 
+@outputs 
+@persist Ang 
+@trigger 
+@model 
+
+if (first()) {
+    
+    Ang = 1
+    
+    #Car Floor
+    holoCreate(1)
+    holoModel(1, "hq_rectangle")
+    holoScale(1, vec(4.3,7,0.5))
+    holoParent(1, entity())
+    holoColor(1, vec(25,25,25))
+    holoMaterial(1, "models/shiny")
+
+    #Seat 1
+    holoCreate(2) 
+    holoModel(2, "models/nova/jeep_seat.mdl")
+    holoPos(2, entity():toWorld(vec(0,0,-2)))
+    holoColor(2, vec(150,150,150))
+    holoMaterial(2, "models/shiny")
+    holoParent(2, 1)
+    
+    # Window
+    holoCreate(4)
+    holoMaterial(4, "models/shiny")
+    holoModel(4, "hq_rectangle")
+    holoParent(4, 1)
+    holoScale(4, vec(4.3,2,0.2))
+    holoPos(4, entity():toWorld(vec(0,33,10)))
+    holoAng(4, ang(0,0,-45))
+    holoAlpha(4, 50)
+    
+    #Wheel 1
+    holoCreate(5)
+    holoParent(5, 1)
+    holoModel(5, "hq_cylinder")
+    holoPos(5, entity():toWorld(vec(26.6,24,0)))
+    holoAng(5, ang(90,0,0))
+    holoScale(5, vec(1,1,0.3))
+    
+    #Wheel 2
+    holoCreate(6)
+    holoParent(6, 1)
+    holoModel(6, "hq_cylinder")
+    holoPos(6, entity():toWorld(vec(-26.6,24,0)))
+    holoAng(6, ang(90,0,0))
+    holoScale(6, vec(1,1,0.3))
+    
+    #Wheel 3
+    
+    holoCreate(7)
+    holoParent(7, 1)
+    holoModel(7, "hq_cylinder")
+    holoPos(7, entity():toWorld(vec(-26.6,-28,0)))
+    holoAng(7, ang(90,0,0))
+    holoScale(7, vec(1,1,0.3))
+    
+    #Wheel 4
+    
+    holoCreate(8)
+    holoParent(8, 1)
+    holoModel(8, "hq_cylinder")
+    holoPos(8, entity():toWorld(vec(26.6,-28,0)))
+    holoAng(8, ang(90,0,0))
+    holoScale(8, vec(1,1,0.3))
+    
+    #Triangle Side Panel 1
+    
+    holoCreate(9)
+    holoParent(9, 1)
+    holoModel(9, "models/hunter/triangles/2x2.mdl")
+    holoScale(9, vec(0.2,0.2,0.5))
+    holoAng(9, ang(90,0,0))
+    holoPos(9, entity():toWorld(vec(-25,33,8.5)))
+    holoColor(9, vec(25,25,25))
+    holoMaterial(9, "models/shiny")
+    
+    #Triangle Side Panel 2
+    
+    holoCreate(10)
+    holoParent(10, 1)
+    holoModel(10, "models/hunter/triangles/2x2.mdl")
+    holoScale(10, vec(0.2,0.2,0.5))
+    holoAng(10, ang(90,0,0))
+    holoPos(10, entity():toWorld(vec(25,33,8.5)))
+    holoColor(10, vec(25,25,25))
+    holoMaterial(10, "models/shiny")
+    
+    #Recatangle Side Panel 1
+    
+    holoCreate(11)
+    holoParent(11, 1)
+    holoModel(11, "hq_rectangle")
+    holoScale(11, vec(0.1,5.5,1.56))
+    holoPos(11, entity():toWorld(vec(-25.3,-9,8.5)))
+    holoColor(11, vec(25,25,25))
+    holoMaterial(11, "models/shiny")
+    
+    #Recatangle Side Panel 2
+    
+    holoCreate(12)
+    holoParent(12, 1)
+    holoModel(12, "hq_rectangle")
+    holoScale(12, vec(0.1,5.5,1.56))
+    holoPos(12, entity():toWorld(vec(25.3,-9,8.5)))
+    holoColor(12, vec(25,25,25))
+    holoMaterial(12, "models/shiny")
+    
+    #Rectangle Back Panel
+    
+    holoCreate(13)
+    holoParent(13, 1)
+    holoModel(13, "hq_rectangle")
+    holoScale(13, vec(0.1,4.3,1.56))
+    holoAng(13, ang(0,90,0))
+    holoPos(13, entity():toWorld(vec(0, -41.3, 8.5)))
+    holoColor(13, vec(25,25,25))
+    holoMaterial(13, "models/shiny")
+    
+    #Head Lights 1
+    
+    holoCreate(14)
+    holoParent(14, 1)
+    holoModel(14, "hq_cylinder")
+    holoPos(14, entity():toWorld(vec(10,43,0)))
+    holoAng(14, ang(0,0,90))
+    holoScale(14, vec(0.4,0.4,0.1))
+    
+    #Head Lights 2
+    
+    holoCreate(15)
+    holoParent(15, 1)
+    holoModel(15, "hq_cylinder")
+    holoPos(15, entity():toWorld(vec(-10,43,0)))
+    holoAng(15, ang(0,0,90))
+    holoScale(15, vec(0.4,0.4,0.1))
+    
+}
+
+E = entity() 
+O = owner()
+runOnTick(1)
+
+
+
+if(owner():inVehicle()) {
+
+    if(owner():keyPressed("w")) {
+    
+        E:setPos(E:toWorld(vec(0,25,0)))
+        runOnTick(1)   
+    }
+
+
+    if(owner():keyPressed("a")) {
+
+        Ang += 15.0
+        E:setAng(ang(0,Ang,0))
+        runOnTick(1)
+    }
+
+    if(owner():keyPressed("s")) {
+    
+        E:setPos(E:toWorld(vec(0,-25,0)))
+        runOnTick(1)  
+    }
+
+    if(owner():keyPressed("d")) {
+    
+        Ang -= 15
+        E:setAng(ang(0,Ang,0))
+        runOnTick(1)  
+    }
+
+    if(owner():keyJump()) {
+ 
+        E:setPos(E:toWorld(vec(0,0,25)))
+        runOnTick(1)   
+    }
+
+    if(owner():keySprint()) {
+    
+        E:setPos(E:toWorld(vec(0,0,-25)))
+        runOnTick(1)   
+    }
+
+}
+
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#

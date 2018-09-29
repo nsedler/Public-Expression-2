@@ -1,0 +1,95 @@
+@name King Charles Was Gay
+@inputs EGP:wirelink
+
+function addText(Str:string){
+    EGP:egpClear()
+        
+    EGP:egpText(1, Str, vec2(0, 0))
+    EGP:egpPos(1, vec2(scrW() / 2, 25))
+    EGP:egpSize(1, 25)
+    EGP:egpColor(1, vec(255, 0, 0))
+    EGP:egpAlign(1, 1, 1)
+}
+
+function removeText(){
+    EGP:egpClear()    
+}
+
+if(first()){
+    
+    runOnChat(1)
+    
+    holoCreate(1)
+    holoModel(1, "models/beer/wiremod/gate_e2.mdl")
+    
+    entity():setAlpha(0)
+}
+
+if(chatClk()){
+    
+    Ply = lastSpoke()
+    Ls = lastSaid()
+    
+    PM = Ls:explode(" ")
+    
+    if (Ls:sub(1, 3) == "/pm"){
+        
+        Ply2 = findPlayerByName(PM[2, string])
+        
+        if(!Ply2){
+            exit()   
+        }
+        
+        PM:remove(1)
+        PM:remove(1)
+        
+        foreach(K, V:string = PM){
+            
+            M = V    
+        }
+        
+        Str = Ply:name() + " pmed " + Ply2:name() + " Message: " + M
+        
+        addText(Str)
+        
+        timer("remove", 5000)
+     
+        print(Ply:name() + " pmed " + Ply2:name() + " Message: ", PM)
+        
+    } elseif (Ls:sub(1,1) == "@"){
+    
+        Ply2 = findPlayerByName(PM[2, string])
+        
+        if(!Ply2){
+            exit()   
+        }
+        
+        PM:remove(1)
+        
+        foreach(K, V:string = PM){
+            
+            M = V    
+        }
+        
+        Str = Ply:name() + " said in admin chat: " + M
+        
+        addText(Str)
+        
+        timer("remove", 5000)
+        
+        print(Ply:name() + " said in admin chat: ", PM)
+    }
+}
+
+if(clk("remove")){
+    
+    removeText()  
+}
+
+#[
+	Made by nate
+	Discord: nate#9823
+	Steam: https://steamcommunity.com/id/nsedler/
+	Email: nsedler1@gmail.com
+	Github: https://github.com/nsedler
+]#
