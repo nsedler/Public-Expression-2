@@ -1,0 +1,177 @@
+@name NCollector
+@inputs EGP:wirelink
+@outputs Fire
+@persist [Printers]:array [Count TotalCollected Collected]:number [Min Max]:vector User:entity TimeLeft:string
+
+if(first()) {
+    TimeLeft = 0 + ":" + 0 + " left until collection"
+    Count = 1
+    TotalCollected = 0
+    Collected = 0
+    
+    runOnChat(1)
+
+    # Creates holo but doesnt make it anything
+    holoCreate(1)
+    holoVisible(1, players(), 0)
+    holoColor(1, vec(255, 0 , 0))
+    holoDisableShading(1, 1)
+    
+    # Finds the user within a distance of 10
+    findByClass("gmod_wire_user")
+    foreach(K, V:entity = findToArray()) {
+        if(V:pos():distance(entity():pos()) < 20) {
+            User = V
+            print(User)
+            User:createWire(entity(), "Fire", "Fire")
+            User:setAng(ang(0, 0, 180))
+            User:setPos(entity():pos() + vec(0, 0, 13))
+            
+        }
+    } 
+    
+    # Finds the closes egp hud and creates a wire with it
+    findByClass("gmod_wire_egp_hud")
+    foreach(K, V:entity = findToArray()) {
+        if(V:pos():distance(entity():pos()) < 20) {
+            entity():createWire(V, "EGP", "wirelink")
+        }   
+    }
+    
+    EGP:egpHudToggle()
+    EGP:egpClear()
+    
+    EGP:egpRoundedBox(1,vec2(1790, 85 ), vec2(340, 90))
+    EGP:egpRoundedBoxOutline(2, vec2(1790, 85), vec2(340, 90))
+    
+    EGP:egpColor(1, vec4(114, 137, 218, 70))
+    EGP:egpColor(2, vec(35, 39, 42))
+    
+    EGP:egpText(3, TimeLeft, vec2(1650, 50))
+    EGP:egpText(4, "Total Collected: " + TotalCollected, vec2(1650, 100))
+}
+
+interval(100)
+
+local TotalMS = timerTimeLeft("Wait")
+        
+# Calculate the minutes and seconds based on the miliseconds provided from TotalMS
+local Minutes = (TotalMS / 1000) / 60
+local Seconds = floor(TotalMS / 1000) % 60
+
+# Checks if there is still time left
+if(TotalMS > 0) {
+    # Puts that extra 0 in there for the seconds for the M:SS effectc
+    if(Seconds < 10) {
+       TimeLeft = floor(Minutes) + ":0" + Seconds + " left until collection"
+    }else {
+        TimeLeft = floor(Minutes) + ":" + Seconds + " left until collection"
+    }
+} else {   
+    # If there is no time left in the timer then it is collecting 
+    TimeLeft = "Currently Collecting"
+}
+
+EGP:egpSetText(3, TimeLeft)
+EGP:egpSetText(4, "Total Collected: $" + TotalCollected)
+
+if(chatClk(owner())) {
+    LS = owner():lastSaid():explode(" ")
+    
+    if(LS[1, string] == "+min") {
+        hideChat(1)
+        
+        Min = owner():aimPos()
+        print("Min: " + Min)
+    }
+    if(LS[1, string] == "+max") {
+        hideChat(1)
+        
+        Max = owner():aimPos()
+        print("max: " + Max)
+    }
+    if(LS[1, string] == "+start") {
+        hideChat(1)
+        
+        timer("go1", 1000)
+    }
+    if(LS[1, string] == "+show") {        
+        hideChat(1)
+        
+        holoVisible(1, players(), 1)
+        print("Showing collection area")
+    }
+    if(LS[1, string] == "+hide") {
+        hideChat(1)   
+        
+        holoVisible(1, players(), 0)
+        print("Hiding collection area")
+    }
+    if(LS[1, string] == "+time") {
+        hideChat(1)
+        
+        print(TimeLeft)
+    }
+}
+
+# Checks if the Min or Max has been changed
+if(changed(Min) & Min & Max | changed(Max) & Min & Max) {
+    HoloScale = Min - Max
+    
+    holoScaleUnits(1, HoloScale)
+    holoPos(1, (Min + Max) / 2)
+}
+
+# Only ran when +start is used
+if(clk("go1")) {
+    findInBox(Min, Max)
+    Found = findToArray()   
+    foreach(K, V:entity = Found) {
+        if(V:isPrinter()) {
+            Printers:pushEntity(V)
+        }  
+    }
+    
+    # Starts the printer collectiong timer
+    timer("start", 1000)
+    print("Starting printer collection.")
+}
+
+# Sets the Users position
+if(clk("start")) {
+    
+    User:setPos(Printers[Count, entity]:pos() + vec(0,0,20))
+    Collected = Collected + Printers[Count, entity]:printerAmount()
+    print("Collecting " +Printers[Count, entity]:printerOwner():name() + " printers " + Count + ". " + Printers[Count, entity]:printerTier())
+    timer("step1", 250)
+    
+}
+
+if(clk("step1")) {
+    
+    Fire = 1
+    timer("step2", 250)   
+}
+
+if(clk("step2")) {
+    Fire = 0
+    Count++
+    
+    # If it has gone through all of the printers then reset all variables and wait 5 mins
+    if(Count == Printers:count() + 1) {
+        Count = 1
+        TotalCollected = TotalCollected + Collected
+        Collected = 0
+        timer("Wait", 300000)   
+        User:setPos(entity():pos() + vec(0, 0, 10))
+        User:setAng(ang(0, 0, 180))
+        print("Done Collecting")
+    } else {
+        timer("start", 250)
+    }
+}
+
+if(clk("Wait")) {
+    timer("start", 500)   
+}
+
