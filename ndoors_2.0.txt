@@ -1,0 +1,189 @@
+@name NDoors 2.0
+@persist [Whitelist Doors]:array [Config]:table
+
+#[
+
+    Commands:
+        "|door":
+            "add" - Adds a valid entity that you are looking at to Doors
+            "remove" - Removes a valid entity that you are looking at from Doors
+            
+        "|player":
+            "add" - Adds a valid player to the whitelist
+            "remove" - Removes a valid player from the whitelist
+            default - Shows a list of all whitelisted players
+            
+        "|prefix":
+            "set" - Changes the prefix to a new one
+            default - Displays the current prefix in use 
+            
+        "|distance":
+            "set" - Changes the detection distance to a new one
+            default - Displays the current distance in use
+            
+]#
+
+if(first()) {
+    
+    runOnChat(1)
+    runOnPlayerDisconnect(1)
+    
+    Whitelist:pushEntity(owner())   
+    
+    Config["prefix", string] = "|"
+    Config["distance", number] = 75
+}
+
+interval(100)
+
+if(chatClk(owner())) {
+    local OwnerLS = owner():lastSaid():explode(" ")
+ 
+    switch(OwnerLS[1, string]:lower()) {
+        
+        # All chat commands for doors are here
+        case Config["prefix", string] + "door",
+            hideChat(1)
+            
+            local DoorEnt = owner():aimEntity()
+            
+            if(DoorEnt:isValid()) {
+                switch(OwnerLS[2, string]:lower()) {
+                    case "add",
+                        if(Doors:getIndex(DoorEnt)) {
+                            print("Door " + DoorEnt:id() + " already exists")
+                        } else {
+                            print("Door " + DoorEnt:id() + " was added to the door list")
+                            Doors:pushEntity(DoorEnt)
+                        }
+                    break
+                    case "remove",
+                        if(Doors:getIndex(DoorEnt)) {
+                            Doors:remove(Doors:getIndex(DoorEnt))
+                            print("Door" + DoorEnt:id() + " has been removed from the door list")
+                        } else {
+                            print("Door" + DoorEnt:id() + " is not in the door list yet")
+                        }
+                    break   
+                }
+            } else {
+                print("You aren't aiming at a valid door")
+            }
+        break
+        
+        # All chat commands for the whitelist are here
+        case Config["prefix", string] + "player",
+            hideChat(1)
+            
+            local Ply = findPlayerByName(OwnerLS[3, string])
+            
+            if(Ply:isValid()) {
+                switch(OwnerLS[2, string]:lower()) {
+                    case "add",
+                        if(Whitelist:getIndex(Ply)) {
+                            print(Ply:getName() + " is already added to the whitelist")
+                        } else {
+                            print(Ply:name() + " has been added to the whitelist")
+                            Whitelist:pushEntity(Ply)
+                        }
+                    break
+                    case "remove",
+                        if(Whitelist:getIndex(Ply)) {
+                            Whitelist:remove(Whitelist:getIndex(Ply))
+                            print(Ply:name() + " has been removed from the whitelist")
+                        } else {
+                            print(Ply:name() + " is not whitelisted currently")
+                        }
+                    break  
+                    default,
+                        print("Whitelisted players:")
+                        foreach(I, V:entity = Whitelist) {
+                            print("  -" + V:name())
+                        }
+                    break 
+                }   
+            }
+        break 
+        
+        # All chat commands for the prefix are here
+        case Config["prefix", string] + "prefix",
+            hideChat(1)
+        
+            switch(OwnerLS[2, string]:lower()) {
+                case "set",
+                    if(Config["prefix", string] == OwnerLS[3, string]) {
+                        print("Prefix is already set to " + OwnerLS[3, string])   
+                    } else {
+                        print("Prefix has been changed from " + Config["prefix", string] + " to " + OwnerLS[3, string])
+                        Config["prefix", string] = OwnerLS[3, string]
+                    }
+                break
+                default,
+                    print("Current prefix is " + Config["prefix", string])
+                break   
+            }
+        break
+        
+        # All chat commands for the distance are here
+        case Config["prefix", string] + "distance",
+            hideChat(1)
+        
+            switch(OwnerLS[2, string]:lower()) {
+                case "set",
+                    if(Config["distance", number] != OwnerLS[3, string]:toNumber()) {
+                        print("Distance has been changed from " + Config["distance", number]:toString() + " to " + OwnerLS[3, string]) 
+                        Config["distance", number] = OwnerLS[3, string]:toNumber()
+                    } else {
+                        print("Distance is already set to " + Config["distance", number])
+                    }
+                break
+                default,
+                    print("Distance is set to " + Config["distance", number]:toString())
+                break    
+            }
+        break
+    }
+}
+
+#[
+    Detection for whitelited member "opening" the door 
+    and "closing" the door
+    
+    Checks if the whitelisted member is within Config["distance", number] of the door
+]#
+
+foreach(I, DoorEnt:entity = Doors) {
+    foreach(J, Player:entity = Whitelist) {
+        if(DoorEnt:massCenter():distance(Player:pos()) < Config["distance", number]) { 
+                DoorEnt:noCollideAll(1)
+                timer("Door" + DoorEnt:id(), 6000)
+       }
+    }   
+    
+    if(clk("Door" + DoorEnt:id())) {
+        print("Closing Door" + DoorEnt:id())
+        DoorEnt:noCollideAll(0)
+    }
+}
+
+
+#[
+    Automatically removes a player from the whitelist if they disconnect
+]#
+
+if(playerDisconnectClk()) {
+    local Ply = lastDisconnectedPlayer()
+    
+    if(Ply:isValid()) {
+        if(Whitelist:getIndex(Ply)) {
+            print(Ply:name() + " has been automatically removed because they disconnected")
+            Whitelist:remove(Whitelist:getIndex(Ply))   
+        }   
+    }
+}
+
+
+
+
+
+
